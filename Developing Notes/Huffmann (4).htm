@@ -1,0 +1,110 @@
+<HTML>
+
+<HEAD>
+
+<TITLE>Datenkompression</TITLE>
+
+<body bgCOLOR=FFFFFF>
+
+<P>
+<U>
+<h1>Datenkompression (Kurzvortrag)</h1>
+</u>
+
+<hr><P>
+Alle Daten bestehen aus Zeichenfolgen, alle Zeichen sind durch ein Alphabet
+definiert, solch ein Zeichensatz wird mit einer festen Anzahl von Bits 
+dargestellt. 
+
+<P>
+ASCII: jedem Zeichen wird eine Folge von 7 Bin&auml;rzeichen zugeordnet
+= 128 m&ouml;gl. Zeichen, pro Zeichen 7 Bit, 
+Text mit 100.000 Zeichen verbraucht 700.000 Bits.
+
+<P>
+Wei&szlig; man das nur Texte zu komprimieren
+sind k&ouml;nnte man die Sonderzeichen weglassen. Das w&uuml;rde
+bedeuten man k&ouml;nnte ein kleineres Alphabet benutzen, und
+somit Speicherplatz sparen.
+
+<P>
+W&uuml;rde man variable Wortl&auml;ngen
+f&uuml;r die Bin&auml;rcodes einf&uuml;hren k&ouml;nnte man h&auml;ufig
+vorkommende Zeichen k&uuml;rzere W&ouml;rter zuordnen.<BR>
+
+<P>'nicemississippi'<P>
+
+Normalerweise -- pro Zeichen 8 Bit: 15 * 8 = <U>120</U><I> </I>Bit
+
+<P>
+Verk&uuml;rztes Alphabet -- pro Zeichen 3 Bit: 15 * 3 = <U>45</U> Bit
+
+<P>
+<B> Nach Huffmann: </B>(k&uuml;rzere Codew&ouml;rter
+f&uuml;r h&auml;ufiger auftretene Zeichen)<P>
+
+Alphabet:        p c m e n s i<BR>
+H&auml;ufigkeit: 2 1 1 1 1 4 5<BR>
+Code: 00 0100 0101 0110 0111 10 11<BR>
+Bin&auml;rcode: 0111|11|0100|0110|0101|11|10|10|11|10|10|11|00|00|11 = 
+<U>38</U> Bit<BR>
+
+<P>
+Um aber eindeutige Decodierbarkeit zu
+gew&auml;hleisten mu&szlig; jeder Code irreduzibel sein, das hei&szlig;t
+kein Code darf mit einem anderem beginnen.
+
+<P>
+Wie aber kommt man auf die Codes?
+
+<P>
+<U><B>Codebaum nach Huffman<P>
+</B></U>
+<P><P>
+<IMG SRC="img00001.gif">
+<P>
+<IMG SRC="img00002.gif">
+<P>
+<IMG SRC="img00003.gif">
+<P>
+Mit diesem Baum l&auml;&szlig;t sich
+die Codierung und Decodierung stark vereinfachen.
+
+<P>
+Das Codewort eines eines Zeichens wird
+durch den Pfad von der Wurzel des Codebbaumes zu diesem Zeichen
+bestimmt, und zwar mit 0 f&uuml;r einen Schritt nach links und
+1 f&uuml;r einen Schritt nach rechts.<BR>
+
+<P>
+Zur Erstellung des Codebaumes werden
+jeweils die Zeichen mit der kleinsten H&auml;ufigkeit ( gr&ouml;&szlig;ten
+Auftrittswarsch. ) miteinander verbunden. Der nun entstandene
+Knoten tr&auml;gt die Summe der beiden H&auml;ufigkeiten und tritt
+nun an die Stelle der beiden Buchstaben( er wird weiterhin wie
+ein Zeichen mit der neuen H&auml;ufigkeit behandelt ). Das Alphabet
+ist also um ein Zeichen reduziert. Dieser Vorgang wird wiederholt
+bis das Alphabet nur noch aus einem Zeichen, der Wurzel, besteht.
+
+<P>
+Bei Texten kann man nat&uuml;rlich auch ganze W&ouml;rter Codieren<BR>
+
+<P>
+Die Leistung dieser Methode ist um so
+gr&ouml;&szlig;er, je gr&ouml;&szlig;er der Quotient aus Datenl&auml;nge
+und Alphabetl&auml;nge ist.<BR>
+
+<P>
+<B>Nachteile:</B>
+
+<P>
+Der Baum mu&szlig; mitgespeichert
+werden.Das hei&szlig;t, die codierte Datei kann 
+gr&ouml;&szlig;er sein als die Ausgangsdatei.
+
+<P><hr>
+
+Der Kurzvortragshalter... :-)
+
+</BODY>
+</HTML>

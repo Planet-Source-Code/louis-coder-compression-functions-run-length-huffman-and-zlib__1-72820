@@ -1,0 +1,155 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="Author" CONTENT="Jan Pieper">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.01 [en] (WinNT; I) [Netscape]">
+   <TITLE>Huffmann-Codierung</TITLE>
+</HEAD>
+<BODY BACKGROUND="sandwhit.gif">
+&nbsp;
+
+<P>Die Idee der Huffman-Codierung (bezogen auf die Bildverarbeitung) beruht
+auf der Annahme, da&szlig; in einem Bild einige Farbwerte h&auml;ufiger
+vorkommen als andere.
+
+<P>Die Farben sind mit einem Bitcode von statischer L&auml;nge gespeichert,
+d.h. jede Farbe wird z.B. durch einen Bytewert repr&auml;sentiert. Huffman
+schl&auml;gt vor, einen Code variabler L&auml;nge zu verwenden, d.h. h&auml;ufig
+vorkommende Farbcodes werden durch k&uuml;rzere, seltenere Farbcodes werden
+durch l&auml;nger Bitkombinationen ersetzt.
+
+<P>Dieses Verfahren ist schon vom Morsealphabet bekannt. Huffman hat aber
+einen Algorithmus zur Feststellung von optimalen variablen Codes entwickelt.
+<BR>Zun&auml;chst werden die H&auml;ufigkeiten der einzelnen Farben festgestellt.
+Danach wird ein Bin&auml;rbaum aufgebaut, an dessen Wurzelknoten die einzelnen
+Farbwerte stehen. Der Weg durch den Bin&auml;rbaum liefert den variablen
+Code, wobei ein linker Zweig 0 und ein rechter 1 liefert. Das geniale (und
+auch notwendige) an diesem Verfahren ist die Eindeutigkeit der gefundenen
+Codes, so da&szlig; die Codes keine Trennzeichen ben&ouml;tigen.
+<BR>&nbsp;
+<TABLE BORDER=0 COLS=2 WIDTH="100%" >
+<TR ALIGN=CENTER>
+<TD ALIGN=LEFT VALIGN=TOP WIDTH="20%">
+<TABLE BORDER COLS=2 WIDTH="100%" >
+<TR>
+<TD>Farbe</TD>
+
+<TD>H&auml;ufigkeit</TD>
+</TR>
+
+<TR>
+<TD>rot</TD>
+
+<TD>50</TD>
+</TR>
+
+<TR>
+<TD>gr&uuml;n</TD>
+
+<TD>60</TD>
+</TR>
+
+<TR>
+<TD>blau</TD>
+
+<TD>20</TD>
+</TR>
+
+<TR>
+<TD>orange</TD>
+
+<TD>100</TD>
+</TR>
+
+<TR>
+<TD>gelb</TD>
+
+<TD>15</TD>
+</TR>
+
+<TR>
+<TD>schwarz</TD>
+
+<TD>100</TD>
+</TR>
+
+<TR>
+<TD>wei&szlig;</TD>
+
+<TD>80</TD>
+</TR>
+</TABLE>
+&nbsp;</TD>
+
+<TD><IMG SRC="huffman.gif" ALT="Huffman-Tree" HEIGHT=260 WIDTH=476></TD>
+</TR>
+
+<TR>
+<TD>Daraus ergeben sich folgende Codierungen:&nbsp;
+<BR>&nbsp;
+<TABLE BORDER COLS=2 WIDTH="100%" >
+<TR>
+<TD>Farbe</TD>
+
+<TD>Codierung</TD>
+</TR>
+
+<TR>
+<TD>rot</TD>
+
+<TD>011</TD>
+</TR>
+
+<TR>
+<TD>gr&uuml;n</TD>
+
+<TD>010</TD>
+</TR>
+
+<TR>
+<TD>blau</TD>
+
+<TD>0001</TD>
+</TR>
+
+<TR>
+<TD>orange</TD>
+
+<TD>10</TD>
+</TR>
+
+<TR>
+<TD>gelb</TD>
+
+<TD>0000</TD>
+</TR>
+
+<TR>
+<TD>schwarz</TD>
+
+<TD>11</TD>
+</TR>
+
+<TR>
+<TD>wei&szlig;</TD>
+
+<TD>001</TD>
+</TR>
+</TABLE>
+&nbsp;</TD>
+
+<TD></TD>
+</TR>
+</TABLE>
+<BR>
+<P><FONT SIZE=+1>Vor- und Nachteile</FONT>
+<P>Ein Nachteil der Huffman-Codierung besteht darin, da&szlig; neben den codierten Bilddaten auch die
+Codierungstabelle gespeichert werden mu&szlig;. Enth&auml;lt ein Bild zuviele unterschiedliche Farbwerte, so
+wird der Platzgewinn durch die k&uuml;rzeren Codes durch den Speicherbedarf der Codierungstabelle aufgehoben
+oder sogar &uuml;berschritten.<BR>
+<BR>
+Besteht das Bild nun aber aus wenigen Farbwerten, so zeigt sich ein deutlicher Vorteil der Huffman-Codierung
+gegen&uuml;ber der <A HREF="runlength.htm" target="main">Runlength-Codierung</A>: Die Huffman-Codierung
+ist unabh&auml;ngig von der Position der verschiedenfarbigen Pixeln.
+</BODY>
+</HTML>

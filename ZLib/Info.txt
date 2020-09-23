@@ -1,0 +1,9 @@
+Info about ZLib.dll
+-------------------
+
+View Coding (Other)\ for source code.
+The ZLib.dll is used as long as my own compression does not work.
+Remember not to use ZLib.dll for commercial purposes.
+
+Zlib.dll must be located in %winsysdir% as cmprzlib.dll when using
+the ZLib compression of GFCompressionmod.

@@ -1,0 +1,108 @@
+<html>
+
+<head>
+<title>Huffmann</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+
+
+
+<meta name="Microsoft Border" content="tl, default"></head>
+
+<body><!--msnavigation--><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td>
+
+<p ALIGN="center"><font size="6"><strong>Rechnernetze</strong></font><br>
+<nobr>[&nbsp;<a href="./">Home</a>&nbsp;]</nobr> <nobr>[&nbsp;<a href="seite92.htm">Nach&nbsp;oben</a>&nbsp;]</nobr> <nobr>[&nbsp;Huffmann&nbsp;]</nobr> <nobr>[&nbsp;<a href="adaptive.htm">Adaptive&nbsp;Huffmann</a>&nbsp;]</nobr> <nobr>[&nbsp;<a href="seite51.htm">Arithmetische&nbsp;Kodierung</a>&nbsp;]</nobr> <nobr>[&nbsp;<a href="seite63.htm">LZ77</a>&nbsp;]</nobr> <nobr>[&nbsp;<a href="seite7.htm">LZ78</a>&nbsp;]</nobr> <nobr>[&nbsp;<a href="seite8.htm">LZW</a>&nbsp;]</nobr></p>
+
+<p ALIGN="center">&nbsp;</p>
+</td></tr><!--msnavigation--></table><!--msnavigation--><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td valign="top" width="1%">
+</td><td valign="top" width="24"></td><!--msnavigation--><td valign="top">
+
+<h1 ALIGN="center">Huffmann-Kodierung</h1>
+
+<hr>
+
+<p ALIGN="JUSTIFY">Die einfache Huffmann-Kodierung stellt eine algorithmische Umsetzung
+der informationstheoretischen Regel dar, möglichst gleichwahrscheinliche Teilmengen der
+zu kodierenden Werte zu verwenden, um eine (sub-) optimale Kodierung zu erhalten. Sie
+erzeugt einen binären Baum, dessen Blätter den Zeichen entsprechen, und der zu jedem
+Knoten zwei Nachfolger (0, 1) besitzt. Eine Kodierung verwendet jeweils ein entsprechendes
+Anfangsstück. </p>
+
+<p>1. Initialisierung: Alle Zeichen werden Knoten zugeordnet und nach ihrer Häufigkeit in
+einer Liste sortiert. </p>
+
+<p>2. Solange die Liste der Knoten noch mehr als ein Element enthält: </p>
+
+<ol TYPE="a">
+  <li>Entnehme die Elemente mit der geringsten Häufigkeit der Liste und erzeuge einen
+    Elternknoten hierfür.</li>
+  <li>Weise die Summe der Häufigkeiten der Kinder dem Elternknoten zu und füge diesen Knoten
+    der Liste zu.</li>
+  <li>Den Zeigern des Elternknoten wird der Code 0, 1 zugeordnet (Reihenfolge im Prinzip
+    beliebig).</li>
+</ol>
+
+<div align="center"><center>
+
+<table BORDER="1" CELLSPACING="1" CELLPADDING="4" WIDTH="543">
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">Zeichen</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">Häufigkeit</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">log2(1/pi)</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">Code</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">Anzahl der Bits für Kodierung </td>
+  </tr>
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">A</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">15</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">1.38</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">0</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">15</td>
+  </tr>
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">B</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">7</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">2.48</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">100</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">21</td>
+  </tr>
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">C</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">6</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">2.70</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">101</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">18</td>
+  </tr>
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">D</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">6</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">2.70</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">110</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">18</td>
+  </tr>
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">E</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">5</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">2.96</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">111</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">15</td>
+  </tr>
+  <tr>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">Summe =</td>
+    <td WIDTH="15%" VALIGN="TOP"><p ALIGN="CENTER">37</td>
+    <td WIDTH="15%" VALIGN="TOP">&nbsp;</td>
+    <td WIDTH="15%" VALIGN="TOP">&nbsp;</td>
+    <td WIDTH="41%" VALIGN="TOP"><p ALIGN="CENTER">87</td>
+  </tr>
+</table>
+</center></div>
+
+<p>&nbsp;</p>
+
+<p ALIGN="CENTER"><img SRC="file:///C:/Programme/Microsoft%20FrontPage/temp/Image307.gif" WIDTH="282" HEIGHT="127"></p>
+
+<p>Im obigen Beispiel werden 87 Bits zu Kodierung benutzt, während eine Kodierung mit
+jeweils 3 Bits 121 Bits benötigen würde. Die idelle Entropie ist 2.19, währen die wahre
+Entropie in diesem Beispiel 87/39 = 2,23 ist, also nahe an der wahren Entropie liegt.
+<!--msnavigation--></td></tr><!--msnavigation--></table></body>
+</html>
