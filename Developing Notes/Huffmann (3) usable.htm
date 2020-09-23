@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<title>Huffman-Verfahren</title>
+<script language="javascript">
+<!--
+function AppletStart(appletcode, typesize, wide, high, sentence) { 
+   windex = window.open('nothing.html','Applet', 'width=' +(wide+15)+ ',height=' +(high+10)+ ',resizable=no,scrollbars=no,toolbar=no,status=yes,location=no,directories=no,menubar=no') 
+
+   windex.document.clear(); 
+   windex.document.writeln (' ');
+   windex.document.writeln (' <APPLET code="' +appletcode+ '" width=' +wide+ ' height=' +high+ '>');
+   windex.document.writeln (' <PARAM NAME=fontsize value=' +typesize+ '> ');
+   windex.document.writeln (' <PARAM NAME=srcString value="' +sentence+ '"> ');
+   windex.document.writeln (' </APPLET> ');
+   windex.document.writeln (' </BODY> ');
+   windex.document.close();
+
+}
+// -->
+</script>
+</head>
+
+<body bgcolor="#C0C0C0">
+
+<table border="0" width="96%">
+  <tr>
+    <td rowspan="2" nowrap><p align="center"><big><big><big><big><strong>Huffmann Verfahren</strong></big></big></big></big></td>
+    <td height="0" nowrap><a href="javascript:AppletStart('Huffman',18,600,300,'Hufffman')"><img
+    src="javacup.gif" width="88" height="82" border="1" align="center"></a></td>
+  </tr>
+  <tr>
+    <td nowrap><a href="javascript:AppletStart('Huffman',18,600,300,'Hufffman')"><font
+    color="black" face="arial" size="-1"><b><i>Huffman Applet</i></b></font> </a></td>
+  </tr>
+</table>
+
+<h3>Konzept:</h3>
+
+<ul>
+  <li>Häufiger auftretende Zeichen werden durch kürzere, seltener auftretende Zeichen werden
+    durch längere Codes dargestellt.</li>
+  <li>Jedes Zeichen werden einheitlich dekodiert.</li>
+  <li><p align="left">Um eine oben skizzierte Codierung zu erreich wird ein binärer Baum
+    (Huffman-Baum) erzeugt, der sich wie folgt liest. Man beginnt an der Wurzel des Baumes und
+    addiert zum bisherigen Code eine 0 (binäre Null) wenn man nach links zu einem Sohnknoten
+    geht und eine 1 (binäre Eins) wenn man nach rechts zu einem Sohnknoten verzweigt.</p>
+  </li>
+</ul>
+
+<p align="center"><br>
+<img src="sampletree.gif" width="307" height="83" alt="sampletree.gif (1920 bytes)"></p>
+
+<p align="center">Bild: Huffman-Baum</p>
+
+<blockquote>
+  <p align="left">Man sieht z.B., daß a mit 00 einen kürzeren Code hat als d mit 110.</p>
+</blockquote>
+
+<h3 align="left">Algorithmus:</h3>
+
+<ol>
+  <li><p align="left">LIST := leere Liste. Diese nimmt später alle Buchstaben mit der
+    Häufigkeit Ihres Auftretens auf.</p>
+  </li>
+  <li><p align="left">Zähle die Anzahl des Auftretens der Zeichen und bezeichne dies als
+    &quot;Gewicht&quot; für jedes Zeichen. Füge jeden Buchstaben mit seinem Gewicht in LIST
+    ein. Führe dies für alle Zeichen des Textes/der Datei durch.</p>
+  </li>
+  <li><p align="left">Finde aus LIST die beiden Knoten, die das kleinste Gewicht besitzen.
+    Erzeuge aus diesen Knoten einen künstlichen Elternknoten, dessen Gewicht genau der Summe
+    der beiden Gewichte der Einzelknoten entspricht. Entfere die beide Knoten aus LIST und
+    füge den Elternknoten in LIST.</p>
+  </li>
+</ol>
+
+<p align="left">Somit sind Knoten mit einem hohen Gewicht näher zur Wurzel als solche mit
+geringerem Gewicht.</p>
+
+<p align="left">Treten in einem Text die Zeichen {a, b, c, d ,e} mit den Gewichten a=7,
+b=6, c=5, d=2 und e=1 auf, so ergibt sich ein Knoten, der dem im obigen Bild entspricht.
+Codiert man den Text &quot;abc&quot; so erhält man auf Grund der eben zugrunde gelegeten
+Gewichte als Ergebnis den Code &quot;000110&quot;.</p>
+
+<h3 align="left">Lasse Deine Zeichenkette nach Huffman kodieren und komprimieren:</h3>
+
+<table border="0" bgcolor="white" width="500" align="center" cellpadding="5">
+  <tr>
+    <td align="center"><form name="RunApplet">
+      <font color="black"><p>Zeichenkette zum Kodieren eingeben: </font><input name="sentence"
+      type="text" size="15"> <input type="Button" value="Run Applet"
+      onclick="AppletStart('Huffman', 18, 630, 300, RunApplet.sentence.value)"> </p>
+    </form>
+    </td>
+  </tr>
+</table>
+
+<hr>
+<align="center">
+<a href="javascript:AppletStart('Huffman',18,600,300,'Hufffman')">
+
+<p></a>&nbsp;</p>
+</body>
+</html>

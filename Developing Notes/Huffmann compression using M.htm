@@ -1,0 +1,184 @@
+<html>
+<head>
+<meta name="author" content="">
+<meta name="description" content="">
+<title></title>
+</head>
+<body bgcolor="#FFFFFF" text="#08429C">
+
+<table width=560 border=0>
+<tr>
+<td valign=top align=center width=120>
+<a href="../index.htm">
+<img src="../gif/m.gif" alt="m.gif - .555 K" width=113 height=89 border=0></a>
+<p>
+<a href="2.htm">
+<img src="../navigate/left.gif" alt="left.gif - .192 K" width=29 height=30 border=0></a>
+<a href="index.htm">
+<img src="../navigate/inhalt.gif" alt="inhalt.gif - .2 K" width=37 height=30 border=0></a>
+<a href="4.htm">
+<img src="../navigate/right.gif" alt="right.gif - .194 K" width=29 height=30 border=0></a>
+</td>
+<td width=440 align=left>
+
+<h2>Datenkompression unter M – Die Methode nach David Huffmann</h2>
+<h4>von Burkhard Kasten, BEWIDATA, Mainz</h4>
+<p>
+<br>
+
+Bei der Diskussion um eine Datenkompression unter M – wie sie im letzten Heft der M B&ouml;rse gef&uuml;hrt wurde – darf die Methode nach David Huffmann nicht fehlen. Huffmann hatte sie 1952 beschrieben, also zu einer Zeit, als noch kein Mensch ernsthaft an computing dachte. Die Huffmann Codierung ist aus prinzipiellen Gr&uuml;nden sehr instruktiv und es zeigt sich, da&szlig; sie in M au&szlig;erordentlich elegant zu programmieren ist – ohne da&szlig; sie sich in der Praxis der Kompression in allen F&auml;llen bew&auml;hren w&uuml;rde.<br>
+Dieses Verfahren geht von der Annahme aus, da&szlig; eine Datei nicht alle 255 m&ouml;glichen ASCII-Zeichen enth&auml;lt, also daher auch nicht unbedingt acht Bit n&ouml;tig sind um diese darzustellen. Falls doch, so ist meist die H&auml;ufigkeit der einzelnen Zeichen recht unterschiedlich verteilt, so da&szlig; man Platz sparen kann, wenn man f&uuml;r die h&auml;ufiger vorkommenden Zeichen k&uuml;rzere Bitmuster verwendet als f&uuml;r die “Rarit&auml;ten”.
+Also verteilt man die Zeichen in einem sogenannten Bin&auml;rbaum, die h&auml;ufig vorkommenden nach oben. An der Spitze beginnend hangelt man sich &uuml;ber die Knotenpunkte rechts-links-eins-null nach unten, bis man das Gesuchte gefunden hat. Das auf dem Weg entstandene Bitmuster ersetzt dieses Zeichen. So kann man relativ einfach komprimieren und expandieren. Weitergehende theoretische Abhandlungen m&ouml;ge man mir bitte ersparen.<br>
+Leider geh&ouml;ren Bitmanipulationen zu den Bereichen, die in M mehr als stiefm&uuml;tterlich behandelt werden und Assemblerfanatikern wie mir die Freude an dieser Sprache etwas d&auml;mpfen. Trotzdem habe ich einmal mein Gl&uuml;ck versucht und herausgekommen ist dieses Listing, das mit nur 105 Zeilen einigerma&szlig;en kurz geraten ist. Es demonstriert anhand eines praktischen Beispieles die Wirkungsweise des Verfahrens und l&auml;&szlig;t sich problemlos auf die pers&ouml;nlichen Bed&uuml;rfnisse umstricken. Ich habe auch der &Uuml;bersichtlichkeit zuliebe bewu&szlig;t auf Laufzeitoptimierungen (und &uuml;berlange Programmzeilen) verzichtet. Weil aber keine externen Zwischenspeicher verwendet werden, ist das Programm auch so recht flott.<p>
+Vorgegeben sei eine Textdatei ^Z, die komprimiert und wieder expandiert werden soll:
+
+<pre>
+^Z(0,1)="Dies ist ein Text, der komprimiert werden soll."
+^Z(0,2)="Er besteht aus zwei Zeilen."
+</pre>
+<br>
+<p>
+<b>1. Schritt: Zeichenz&auml;hlung (Label INIT, COUNT)</b>
+<p>
+Nach der Initialisierung die leichteste &Uuml;bung in M. Trotzdem &auml;rgerlich, denn gerade bei gro&szlig;en Dateien, bei denen sich eine Kompression lohnen k&ouml;nnte kann diese Geschichte recht zeitintensiv werden. Ziel dieser Aktion ist die Verteilung der H&auml;ufigkeiten zu ermitteln. Evtl. kann man sich &uuml;berlegen auf Erfahrungswerte zur&uuml;ckzugreifen, um sich diesen Schritt zu sparen. Das Ergebnis ist ein Feld CT in dem die H&auml;ufigkeiten abgelegt werden: z. B. CT("e")=12.<br>
+FALLE: f&uuml;r die korrekte Expansion wird ein Zeilentrenner ben&ouml;tigt, der nat&uuml;rlich auch mitgez&auml;hlt werden mu&szlig;: CRLF=$CHAR(13,10).
+<br><p>
+
+<b>2. Schritt: Bin&auml;rbaum (Label TABLE)</b>
+<p>
+So einen Baum aufzubauen, h&ouml;rt sich schrecklich kompliziert an, ist es aber zum Gl&uuml;ck nicht: Was ist ein Bin&auml;rbaum eigentlich? Es geht doch nur darum, h&auml;ufig benutzte Zeichen oben anzusiedeln, also durch sehr kurze Bitmuster zu ersetzen w&auml;hrend f&uuml;r die anderen Zeichen l&auml;ngere Muster verwendet werden m&uuml;ssen.
+
+<pre>
+z.B.   100 = e
+      1010 = a
+     10110 = f
+     10111 = x
+</pre>
+
+Um im Muster 10110101010111 das erste Zeichen erkennen zu k&ouml;nnen spalte man die ersten drei Bit ab (das k&uuml;rzeste g&uuml;ltige Muster): 101 und stelle fest, da&szlig; es nicht in der Tabelle existiert. Also nehme man ein weiteres Bit dazu (1011), dann noch eins (10110) um nun endlich f&uuml;ndig zu werden ("f"). Das gefundene Zeichen wird nun gespeichert, das dazugeh&ouml;rige Bitmuster abgespalten (101010111) und mit dem Reststring die Prozedur wiederholt. Die Muster in der Tabelle m&uuml;ssen also von links gelesen eindeutig bleiben. Ein Muster 10101="y" w&uuml;rde zu einem Fehler f&uuml;hren weil das Teilmuster 1010="a" bereits belegt ist.<br>
+Wie baut man nun so einen Baum auf: Zuerst werden alle Zeichen nach ihrer H&auml;ufigkeit sortiert (Zeile TABLE+5). Ab Zeile TABLE+10 f&uuml;hrt man nun die beiden seltensten Zeichen zu einem Knoten zusammen. Allen Zeichen unterhalb dieses Knotens wird eine 1 (Richtung “selten”) oder 0 (Richtung “h&auml;ufig”) vorangestellt. Der Knoten selbst soll mitgez&auml;hlt werden. Das Ergebnis ist das Feld CB, das f&uuml;r jedes Zeichen das dazugeh&ouml;rige Bitmuster enth&auml;lt (z.B. CB("e")= "100110"). Au&szlig;erdem wird ab Zeile TABLE+7 ein Feld CN erzeugt, das die Umwandlung der erzeugten Bitmuster in ASCII-Zeichen erleichtert (z.B. CN("01100001")="a").
+<br>
+<p>
+
+<b>3. Schritt: Kompression (Label PRESS)</b>
+<p>
+Die eigentliche Kompression ist trivial: Man wandele nacheinander jedes Original-Zeichen in ein Bitmuster-String um und reihe diese aneinander. Sobald der String lang genug ist, spalte man von links acht Bit ab, wandle dieses in das neue ASCII-Zeichen um und speichere es ab, vorzugsweise in Ketten zu 511 Zeichen. Das Ergebnis ist in ^Z(1) zu finden. Zu beachten ist, da&szlig; am Ende der Umwandlung ein paar Bits &uuml;brig bleiben k&ouml;nnen. Diese werden mit Nullen zu einem Byte aufgef&uuml;llt und dann gespeichert (Zeile PRESS+3). <br>
+<b>FALLE:</b> Wenn das so entstandene Global ausgelagert werden soll, ist unbedingt darauf zu achten, da&szlig; die Strings kein $CHAR(13,10) enthalten d&uuml;rfen, bzw. keine Zeichenkette, die von der Auslagerungsprozedur selbst als Trennzeichen verwendet wird, denn diese w&uuml;rde ausgeblendet! Dieses Problem l&auml;&szlig;t sich jedoch leicht umgehen, indem man den String $CHAR(13,10) selbst spaltet und auf zwei Global-Eintr&auml;ge verteilt (Zeile P3+1).
+<br>
+<p>
+
+<b>4. Schritt: Bin&auml;rbaum sichern (Label P4)</b>
+<p>
+Leider mu&szlig; der Bin&auml;rbaum “mitgeliefert” werden um die Expansion zu erm&ouml;glichen (Label P4). Dies ruiniert zwar in diesem Beispiel die Kompressionsrate, spielt aber in gr&ouml;&szlig;eren Dateien keine Rolle mehr. Der Baum wird in ^Z(2) abgelegt. Der einfache Aufbau dieses Datensatzes ist in den Kommentarzeilen beschrieben.
+<br>
+<p>
+
+<b>5. Schritt: Expansion (Label EXPAND)</b>
+<p>
+Das Expansionsprogramm besteht nur aus wenigen Zeilen und ist ebenfalls recht trivial: Man lese den Bin&auml;rbaum ein und lade das Feld CV mit den Infos, jedoch umgekehrt als in CB (z.B. (CV("100110")= "e"). Ferner wird das Feld CN die komprimierten ASCII-Zeichen in Bit-Strings umwandeln (z.B. CN("a")="01100001"). Dann wandle man nacheinander alle Zeichen in die entsprechenden Bitmuster um und kette sie aneinander. Nun suche man von links bitweise eine &Uuml;bereinstimmung mit CV, die das expandierte Zeichen liefert. Dieses wird in ^Z(3) abgelegt. Die nun zugeordneten Bits werden abgeschnitten, und die Suche beginnt von vorne (Ab Label EXPAND+16). <br>
+<b>FALLE:</b> Weil die komprimierte Datei am Ende Zus&auml;tze enthalten kann (besagte bin&auml;re Nullen oder Reste aus einer DOS-Datei nach der Ende-Marke), ist nicht auszuschlie&szlig;en, da&szlig; die expandierte Datei unerw&uuml;nschte Anh&auml;nge erh&auml;lt. Um dies zu vermeiden, sollte entweder die Original-Dateil&auml;nge festgehalten werden (z.B. zusammen mit dem Bin&auml;rbaum) oder eine eindeutige Ende-Marke existieren. Das Programm kann leicht um ein solches Endekriterium erweitert werden.<br>
+Fazit: Das Programm ist recht schnell und liefert ganz brauchbare Ergebnisse. Trotzdem hat es mich nicht so richtig &uuml;berzeugt. Bei Dateien, die einen sehr eingeschr&auml;nkten Zeichensatz verwenden (Zahlengr&auml;ber) liegt die Kompression bei 50% und mehr, bei Text- und erst recht Bin&auml;rdateien wird das Ergebnis merklich schlechter und zwar umso mehr, je gleichm&auml;&szlig;iger die H&auml;ufigkeit verteilt ist. W&auml;hrend sehr h&auml;ufig genutzte Zeichen nur drei bis vier Bit ben&ouml;tigen, k&ouml;nnen “Rarit&auml;ten” aufgrund der Baumstruktur durchaus auch l&auml;nger als acht Bit sein, was der Kompression sogar entgegenwirkt. Ein Versuch mit ein paar M-Programmen (Source Files) lieferte eine Kompression um ca. 37%, reicht also bei weitem nicht an DOS-Zipper heran.
+
+<pre>
+CMPR ;
+     DO INIT,COUNT,TABLE,PRESS
+     QUIT
+INIT ;
+     KILL ^Z(1),^Z(2) KILL CT
+     SET CRLF=$C(13,10),MXUEB=511
+     QUIT
+COUNT ;CT(zeichen) = HAEUFIGKEIT ALLER ZEICHEN
+     NEW A,I,K,X
+     SET A=""
+     FOR  SET A=$ORDER(^Z(0,A)) QUIT:A=""  SET X=^(A)_CRLF DO:X'=""
+     .FOR I=1:1:$LENGTH(X) DO
+     ..SET K=$EXTRACT(X,I) SET:'$DATA(CT(K)) CT(K)=0 SET CT(K)=CT(K)+1
+     QUIT
+TABLE ;AUFBAU BINAERBAUM
+     ;CB(zeichen)       = BITMUSTER ALLER ZEICHEN (Z.B. "0110")
+     ;CN(bitmuster)     = UMWANDLUNG BITMUSTER —> DEZIMAL
+     ;CC(menge,zeichen) = ZEICHEN, SORTIERT NACH HAEUFIGKEIT (TEMPORAER)
+     NEW C0,C10,C11,C20,C21,CC,CN,I
+     SET I="" FOR  SET I=$ORDER(CT(I)) QUIT:I=""  SET CC(CT(I),I)=I
+     KILL CB FOR I=0:1:255 SET CB($C(I))=""
+     KILL CN FOR I=0:1:255 SET C10=I,C20="" DO  SET CN(C20)=I
+     .FOR C0=1:1:8 SET C20=$S(C10#2:1,1:0)_C20,C10=C10\2
+      FOR  DO  QUIT:C20=""
+     .SET C10=$ORDER(CC("")),C11=$ORDER(CC(C10,""))
+     .SET C20=C10,C21=$ORDER(CC(C20,C11))
+     .IF C21="" SET C20=$ORDER(CC(C10)) QUIT:C20=""  DO
+     ..SET C21=$ORDER(CC(C20,""))
+     .SET CC(C10+C20+1,C11)=CC(C10,C11)_CC(C20,C21)
+     .FOR I=1:1:$LENGTH(CC(C10,C11)) DO
+     ..SET C0=$EXTRACT(CC(C10,C11),I),CB(C0)="1"_CB(C0)
+     .FOR I=1:1:$LENGTH(CC(C20,C21)) DO
+     ..SET C0=$EXTRACT(CC(C20,C21),I),CB(C0)="0"_CB(C0)
+     .KILL CC(C10,C11),CC(C20,C21)
+     QUIT
+PRESS ;KOMPRESSION AUSFUEHREN
+     NEW A,CNT,XX,XY,XZ
+     SET CNT=0,XY="",XZ=""
+     SET A="" FOR  SET A=$ORDER(^Z(0,A)) QUIT:A=""  SET XX=^(A)_CRLF DO P1
+     SET:$LENGTH(XY) XZ=XZ_$C(CN($EXTRACT(XY_"00000000",1,8)))
+     FOR  QUIT:XZ=""  DO P3(1)
+     DO P4
+     QUIT
+P1 ;ZEICHEN DURCH BITMUSTER ERSETZEN, JE 8 BIT ZU NEUEM ZEICHEN UMWANDELN
+     FOR I=1:1:$LENGTH(XX) DO
+     .SET XY=XY_CB($EXTRACT(XX,I))
+     .FOR  QUIT:$LENGTH(XY)<8  DO
+     ..SET XZ=XZ_$C(CN($EXTRACT(XY,1,8))),XY=$EXTRACT(XY,9,$LENGTH(XY))
+     .DO:$LENGTH(XZ)>MXUEB P3(1)
+     QUIT
+P3(KEY) ;TEIL DER ZEICHENKETTE XZ ABSPEICHERN
+     SET TR=$FIND(XZ,CRLF) SET:'TR TR=MXUEB+2 SET:TR>(MXUEB+2) TR=MXUEB+2
+     SET CNT=CNT+1,^Z(KEY,CNT)=$EXTRACT(XZ,1,TR-2)
+     SET XZ=$EXTRACT(XZ,TR-1,$LENGTH(XZ))
+
+QUIT
+P4 ;BINAERBAUM ABSPEICHERN
+     ;laenge1_zeichen1_bitmuster1_laenge2_zeichen2_bitmuster2_..._null
+     ;7_10_"11110"_7_13_"11101"_..._0
+     ;  lf           cr
+     SET A=" ",C=0,XZ=""
+     FOR I=0:1:255 DO:$LENGTH(CB($C(I)))
+     .SET XZ=XZ_$C($LENGTH(CB($C(I)))+2)_$C(I)_CB($C(I))
+     .DO:$LENGTH(XZ)>MXUEB P3(2)
+     SET XZ=XZ_$C(0) FOR  QUIT:XZ=""  DO P3(2)
+     QUIT
+EXPAND ;
+     NEW A,I,C,C0,C10,C20,CB,CNT,K,VC,X,X0,XX,XY,XZ
+     KILL ^Z(3)
+     SET CRLF=$C(13,10),MXUEB=511
+     ;CN(zeichen)              = BITMUSTER ALLER ASCII-ZEICHEN
+     ;CV(binaerbaum_bitmuster) = ZUGEORDNETES ZEICHEN
+     KILL CN FOR I=0:1:255 SET C10=I,C20="" DO
+     .FOR K=1:1:8 SET C20=$S(C10#2:1,1:0)_C20,C10=C10\2 SET CN($C(I))=C20
+     KILL CV SET CV=999,CB=0
+     SET XX="",A="" FOR  SET A=$ORDER(^Z(2,A)) QUIT:A=""  SET XX=XX_^(A) DO
+     .FOR  QUIT:XX=""  SET I=$A($EXTRACT(XX)) QUIT:'I  QUIT:$LENGTH(XX)<I  DO
+     ..SET:CV>(I-2) CV=I-2 SET:CB<(I-2) CB=I-2
+     ..SET CV($EXTRACT(XX,3,I))=$EXTRACT(XX,2)
+     ..SET XX=$EXTRACT(XX,I+1,$LENGTH(XX))
+     SET CNT=0,XY="",XZ=""
+     SET A="" FOR  SET A=$ORDER(^Z(1,A)) QUIT:A=""  SET XX=^(A) DO
+     .FOR C0=1:1:$LENGTH(XX) DO  QUIT:$LENGTH(XY)>MXUEB
+     ..SET XY=XY_CN($EXTRACT(XX,C0))
+     .FOR C0=CV:1:CB DO
+     ..SET K=$EXTRACT(XY,1,C0)
+     ..QUIT:’$DATA(CV(K))
+     ..SET XZ=XZ_CV(K),XY=$EXTRACT(XY,C0+1,$LENGTH(XY)),C0=CV-1
+     .FOR  SET C0=$F(XZ,CRLF) QUIT:'C0  DO
+     ..SET CNT=CNT+1,^Z(3,CNT)=$EXTRACT(XZ,1,C0-3)
+     ..SET XZ=$EXTRACT(XZ,C0,$LENGTH(XZ))
+     QUIT
+
+</pre>
+
+</td>
+</tr>
+</table>
+
+
+</body>
+</html>
